@@ -23,6 +23,7 @@ public class CreateFishSampling : Ep
     public override void Configure()
     {
         Post("/fish-sampling");
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok, BadRequest<string>>> ExecuteAsync(FishSamplingDto req, CancellationToken ct)

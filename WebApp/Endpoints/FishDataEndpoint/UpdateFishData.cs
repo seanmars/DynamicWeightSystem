@@ -22,6 +22,7 @@ public class UpdateFishData : Ep
     public override void Configure()
     {
         Put("/fish-data");
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<FishDataDto>, BadRequest<string>>> ExecuteAsync(FishDataDto req,

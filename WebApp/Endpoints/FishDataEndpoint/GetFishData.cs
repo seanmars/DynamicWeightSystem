@@ -22,6 +22,7 @@ public class GetFishData : Ep
     public override void Configure()
     {
         Get("/fish-data");
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<List<FishDataDto>>, BadRequest<string>>> ExecuteAsync(CancellationToken ct)

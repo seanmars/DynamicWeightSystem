@@ -23,6 +23,7 @@ public class CreateFishData : Ep
     public override void Configure()
     {
         Post("/fish-data");
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok, BadRequest<string>>> ExecuteAsync(FishDataDto req, CancellationToken ct)
