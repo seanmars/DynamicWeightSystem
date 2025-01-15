@@ -2,8 +2,8 @@
 
 public class FishSampling
 {
-    public string Id { get; set; } = null!;
-    public long Timestamp { get; set; }
-    public int FishId { get; set; }
-    public int Weight { get; set; }
+    public required string Id { get; set; } = Guid.CreateVersion7().ToString();
+    public required long Timestamp { get; set; }
+    public required string FishId { get; set; }
+    public required int Weight { get; set; }
 }

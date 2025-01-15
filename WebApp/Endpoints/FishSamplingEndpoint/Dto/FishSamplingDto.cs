@@ -2,7 +2,7 @@
 
 public class FishSamplingDto
 {
-    public long Timestamp { get; set; }
-    public int FishId { get; set; }
-    public int Weight { get; set; }
+    public required long Timestamp { get; set; }
+    public required string FishId { get; set; }
+    public required int Weight { get; set; }
 }

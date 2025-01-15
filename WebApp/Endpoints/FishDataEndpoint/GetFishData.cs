@@ -5,7 +5,7 @@ using WebApp.Endpoints.FishDataEndpoint.Dto;
 
 namespace WebApp.Endpoints.FishDataEndpoint;
 
-public class GetFishDataList : Ep
+public class GetFishData : Ep
     .NoReq
     .Res<Results<
         Ok<List<FishDataDto>>,
@@ -14,14 +14,14 @@ public class GetFishDataList : Ep
 {
     private readonly AppDbContext _db;
 
-    public GetFishDataList(AppDbContext db)
+    public GetFishData(AppDbContext db)
     {
         _db = db;
     }
 
     public override void Configure()
     {
-        Get("/fish-data-list");
+        Get("/fish-data");
     }
 
     public override async Task<Results<Ok<List<FishDataDto>>, BadRequest<string>>> ExecuteAsync(CancellationToken ct)

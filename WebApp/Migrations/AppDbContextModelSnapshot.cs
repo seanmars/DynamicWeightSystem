@@ -18,8 +18,8 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("WebApp.Models.FishData", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -35,8 +35,9 @@ namespace WebApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("FishId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FishId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("Timestamp")
                         .HasColumnType("INTEGER");

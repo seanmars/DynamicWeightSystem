@@ -2,6 +2,6 @@
 
 public class FishDataDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = null!;
+    public required string Id { get; set; }
+    public required string Name { get; set; }
 }

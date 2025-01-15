@@ -14,7 +14,7 @@ namespace WebApp.Migrations
                 name: "FishData",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -28,7 +28,7 @@ namespace WebApp.Migrations
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     Timestamp = table.Column<long>(type: "INTEGER", nullable: false),
-                    FishId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FishId = table.Column<string>(type: "TEXT", nullable: false),
                     Weight = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
