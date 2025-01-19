@@ -28,14 +28,21 @@ public class CreateFishData : Ep
 
     public override async Task<Results<Ok, BadRequest<string>>> ExecuteAsync(FishDataDto req, CancellationToken ct)
     {
-        if (await _db.FishData.AnyAsync(x => x.Id == req.Id, ct))
+        if (string.IsNullOrWhiteSpace(req.FishCode) ||
+            string.IsNullOrWhiteSpace(req.Name))
         {
-            return TypedResults.BadRequest("Fish data with this ID already exists.");
+            return TypedResults.BadRequest("Fish code and name are required.");
+        }
+
+        if (await _db.FishData.AnyAsync(x => x.FishCode == req.FishCode, ct))
+        {
+            return TypedResults.BadRequest("Fish data with this FishCode already exists.");
         }
 
         var fishData = new FishData
         {
-            Id = req.Id,
+            Id = Guid.CreateVersion7().ToString(),
+            FishCode = req.FishCode,
             Name = req.Name
         };
 

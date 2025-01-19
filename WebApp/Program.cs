@@ -1,30 +1,57 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Serilog;
 using WebApp;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .Destructure.ToMaximumDepth(3)
+    .WriteTo.Console()
+    .CreateLogger();
 
-// Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(options =>
+try
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseSqlite(connectionString);
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddFastEndpoints();
+    // Add services to the container.
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.UseSqlite(connectionString);
+    });
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+    builder.Services.AddFastEndpoints();
 
-var app = builder.Build();
+    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    builder.Services.AddOpenApi();
 
-// Configure the HTTP request pipeline.
-app.MapOpenApi();
-app.MapScalarApiReference();
+    var app = builder.Build();
 
-app.UseHttpsRedirection();
+    // Configure the HTTP request pipeline.
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 
-app.UseFastEndpoints();
+    app.UseStaticFiles();
+    app.UseHttpsRedirection();
 
-app.Run();
+    app.UseFastEndpoints(config =>
+    {
+        config.Endpoints.RoutePrefix = "api";
+    });
+
+    app.Run();
+}
+catch (HostAbortedException)
+{
+    // Ignore
+    // Throw HostAbortedException when using EF CLI.
+    // see more details: https://github.com/dotnet/efcore/issues/28478
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

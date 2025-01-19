@@ -16,8 +16,10 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<FishData>()
             .HasKey(x => x.Id);
+
         modelBuilder.Entity<FishData>()
-            .Property(x => x.Id)
+            .Property(x => x.FishCode)
+            .IsUnicode()
             .ValueGeneratedNever();
 
         modelBuilder.Entity<FishSampling>()

@@ -10,18 +10,23 @@ using WebApp;
 namespace WebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250115153208_Initial")]
+    [Migration("20250118161052_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
 
             modelBuilder.Entity("WebApp.Models.FishData", b =>
                 {
                     b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FishCode")
+                        .IsRequired()
+                        .IsUnicode(true)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -38,7 +43,7 @@ namespace WebApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FishId")
+                    b.Property<string>("FishCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -2,6 +2,7 @@
 
 public class FishDataDto
 {
-    public required string Id { get; set; }
+    public string? Id { get; set; } = string.Empty;
+    public required string FishCode { get; set; }
     public required string Name { get; set; }
 }

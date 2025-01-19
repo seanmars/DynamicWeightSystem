@@ -21,19 +21,26 @@ public class UpdateFishData : Ep
 
     public override void Configure()
     {
-        Put("/fish-data");
+        Put("/fish-data/{id}");
         AllowAnonymous();
     }
 
     public override async Task<Results<Ok<FishDataDto>, BadRequest<string>>> ExecuteAsync(FishDataDto req,
         CancellationToken ct)
     {
-        var fishData = await _db.FishData.FirstOrDefaultAsync(x => x.Id == req.Id, ct);
+        var id = HttpContext.Request.RouteValues["id"]?.ToString();
+        if (id == null)
+        {
+            return TypedResults.BadRequest("ID is missing in the route.");
+        }
+
+        var fishData = await _db.FishData.FirstOrDefaultAsync(x => x.Id == id, ct);
         if (fishData == null)
         {
             return TypedResults.BadRequest("Fish data with this ID does not exist.");
         }
 
+        fishData.FishCode = req.FishCode;
         fishData.Name = req.Name;
         await _db.SaveChangesAsync(ct);
 

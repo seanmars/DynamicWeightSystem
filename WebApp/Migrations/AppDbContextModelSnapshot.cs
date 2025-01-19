@@ -14,11 +14,16 @@ namespace WebApp.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
 
             modelBuilder.Entity("WebApp.Models.FishData", b =>
                 {
                     b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FishCode")
+                        .IsRequired()
+                        .IsUnicode(true)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -35,7 +40,7 @@ namespace WebApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FishId")
+                    b.Property<string>("FishCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -28,7 +28,7 @@ public class CreateFishSampling : Ep
 
     public override async Task<Results<Ok, BadRequest<string>>> ExecuteAsync(FishSamplingDto req, CancellationToken ct)
     {
-        var fish = await _db.FishData.FirstOrDefaultAsync(x => x.Id == req.FishId, ct);
+        var fish = await _db.FishData.FirstOrDefaultAsync(x => x.FishCode == req.FishCode, ct);
         if (fish == null)
         {
             return TypedResults.BadRequest("Fish with this ID does not exist.");
@@ -38,7 +38,7 @@ public class CreateFishSampling : Ep
         {
             Id = Guid.CreateVersion7().ToString(),
             Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(req.Timestamp).ToUnixTimeMilliseconds(),
-            FishId = req.FishId,
+            FishCode = req.FishCode,
             Weight = req.Weight
         };
 

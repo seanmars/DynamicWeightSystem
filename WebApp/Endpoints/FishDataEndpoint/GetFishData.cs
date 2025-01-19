@@ -31,6 +31,7 @@ public class GetFishData : Ep
             .Select(x => new FishDataDto
             {
                 Id = x.Id,
+                FishCode = x.FishCode,
                 Name = x.Name
             })
             .ToListAsync(cancellationToken: ct);

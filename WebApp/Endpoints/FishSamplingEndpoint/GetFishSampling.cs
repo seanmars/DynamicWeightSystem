@@ -32,7 +32,7 @@ public class GetFishSampling : Ep
             .Select(x => new FishSamplingDto
             {
                 Timestamp = x.Timestamp,
-                FishId = x.FishId,
+                FishCode = x.FishCode,
                 Weight = x.Weight
             })
             .ToListAsync(cancellationToken: ct);
