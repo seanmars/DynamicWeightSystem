@@ -1,6 +1,9 @@
 ﻿<template>
   <div>
-    <v-data-table :headers="headers" :items="fishWeightHistory" item-value="id">
+    <v-data-table
+      :headers="headers"
+      :items="fishWeightHistory"
+      item-value="id">
       <template v-slot:item.timestamp="{ item }">
         {{ new Date(item.timestamp).toLocaleString() }}
       </template>

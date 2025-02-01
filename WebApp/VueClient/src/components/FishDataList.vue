@@ -6,6 +6,7 @@
     <v-data-table
       :headers="headers"
       :items="fishData"
+      :items-per-page="itemsPerPage"
       item-value="id"
       height="500px"
       fixed-header
@@ -13,6 +14,9 @@
       <template v-slot:item.actions="{ item }">
         <v-icon class="me-2" size="small" color="blue" icon="fa fa-pen-to-square" @click="editItem(item)" />
         <v-icon class="me-2" size="small" color="red" icon="fa fa-trash" @click="deleteItem(item)" />
+      </template>
+
+      <template v-slot:bottom>
       </template>
     </v-data-table>
 
@@ -98,6 +102,10 @@ const editedItem = ref<FishData>({ id: '', fishCode: '', name: '' });
 const defaultItem = { id: '', fishCode: '', name: '' };
 const editState = ref<'edit' | 'create'>('create');
 
+const itemsPerPage = computed(() => {
+  return fishData.value.length;
+});
+
 const getFishData = async () => {
   const url = '/api/fish-data';
   const { data, error } = await useFetch(url).json();
@@ -128,7 +136,7 @@ const createRequest = async () => {
 };
 
 const updateRequest = async () => {
-  const url = `/api/fish-data/${editedItem.value.id}`;
+  const url = `/api/fish-data/${ editedItem.value.id }`;
   const { data, error } = await useFetch(url, {
     method: 'PUT',
     headers: {
@@ -146,7 +154,7 @@ const updateRequest = async () => {
 };
 
 const deleteRequest = async () => {
-  const url = `/api/fish-data/${editedItem.value.id}`;
+  const url = `/api/fish-data/${ editedItem.value.id }`;
   const { error } = await useFetch(url, {
     method: 'DELETE',
   });
