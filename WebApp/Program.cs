@@ -1,41 +1,57 @@
-var builder = WebApplication.CreateBuilder(args);
+using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
+using Serilog;
+using WebApp;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+Log.Logger = new LoggerConfiguration()
+    .Destructure.ToMaximumDepth(3)
+    .WriteTo.Console()
+    .CreateLogger();
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
-}
+    var builder = WebApplication.CreateBuilder(args);
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    // Add services to the container.
+    builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.UseSqlite(connectionString);
+    });
 
-app.Run();
+    builder.Services.AddFastEndpoints();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    builder.Services.AddOpenApi();
+
+    var app = builder.Build();
+
+    // Configure the HTTP request pipeline.
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+
+    app.UseStaticFiles();
+    app.UseHttpsRedirection();
+
+    app.UseFastEndpoints(config =>
+    {
+        config.Endpoints.RoutePrefix = "api";
+    });
+
+    app.Run();
+}
+catch (HostAbortedException)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    // Ignore
+    // Throw HostAbortedException when using EF CLI.
+    // see more details: https://github.com/dotnet/efcore/issues/28478
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
