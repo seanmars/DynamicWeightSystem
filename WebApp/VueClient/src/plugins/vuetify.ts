@@ -12,6 +12,8 @@ import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
 import { aliases, fa } from 'vuetify/iconsets/fa';
 import { zhHant, en } from 'vuetify/locale';
+import DayJsAdapter from '@date-io/dayjs';
+import dayjsLang from 'dayjs/locale/zh-tw';
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
@@ -23,6 +25,12 @@ export default createVuetify({
     aliases,
     sets: {
       fa,
+    },
+  },
+  date: {
+    adapter: DayJsAdapter,
+    locale: {
+      'zh-tw': dayjsLang,
     },
   },
   locale: {

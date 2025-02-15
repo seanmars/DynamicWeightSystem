@@ -8,3 +8,30 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+
+// Custom vcalendar styles for not-in-month days
+// ref: https://github.com/nathanreyes/v-calendar/issues/334#issuecomment-760193616
+.vc-container .vc-day-content:hover:not(.is-disabled) {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.vc-container .vc-day-content.is-disabled {
+  pointer-events: none;
+}
+
+.vc-container .vc-day-content.is-disabled:hover {
+  background-color: transparent;
+}
+
+.vc-day.is-not-in-month *:not(.is-disabled) {
+  opacity: 50%;
+  color: #374151;
+  pointer-events: auto;
+}
+
+.vc-day.is-not-in-month .is-disabled {
+  opacity: 50%;
+  color: #9ca3af;
+  pointer-events: none;
+}

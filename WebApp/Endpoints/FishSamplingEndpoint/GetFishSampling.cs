@@ -14,9 +14,12 @@ public class GetFishSampling : Ep
 {
     private readonly AppDbContext _db;
 
-    public GetFishSampling(AppDbContext db)
+    private readonly FakeDataService _fakeDataService;
+
+    public GetFishSampling(AppDbContext db, FakeDataService fakeDataService)
     {
         _db = db;
+        _fakeDataService = fakeDataService;
     }
 
     public override void Configure()
@@ -28,14 +31,16 @@ public class GetFishSampling : Ep
     public override async Task<Results<Ok<List<FishSamplingDto>>, BadRequest<string>>> ExecuteAsync(
         CancellationToken ct)
     {
-        var result = await _db.FishSamplings
-            .Select(x => new FishSamplingDto
-            {
-                Timestamp = x.Timestamp,
-                FishCode = x.FishCode,
-                Weight = x.Weight
-            })
-            .ToListAsync(cancellationToken: ct);
+        // var result = await _db.FishSamplings
+        //     .Select(x => new FishSamplingDto
+        //     {
+        //         Timestamp = x.Timestamp,
+        //         FishCode = x.FishCode,
+        //         Weight = x.Weight
+        //     })
+        //     .ToListAsync(cancellationToken: ct);
+
+        var result = _fakeDataService.GetFishSamplings();
 
         return TypedResults.Ok(result);
     }
