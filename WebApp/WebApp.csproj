@@ -11,7 +11,7 @@
         <SpaProxyServerUrl>http://localhost:9284</SpaProxyServerUrl>
         <SpaProxyLaunchCommand>pnpm i &amp;&amp; pnpm dev</SpaProxyLaunchCommand>
         <SpaProxyLaunchCommand Condition="$([MSBuild]::IsOsPlatform('Windows'))">cmd.exe /s /c $(SpaProxyLaunchCommand)</SpaProxyLaunchCommand>
-        <SpaProxyLaunchCommand Condition="$([MSBuild]::IsOSUnixLike())">sh -c '$(SpaProxyLaunchCommand)'</SpaProxyLaunchCommand>
+        <SpaProxyLaunchCommand Condition="$([MSBuild]::IsOSUnixLike())">sh -c %5C&quot;$(SpaProxyLaunchCommand)%5C&quot;</SpaProxyLaunchCommand>
         <!-- ============================== -->
     </PropertyGroup>
 
@@ -43,7 +43,6 @@
 
     <ItemGroup>
         <Folder Include="Migrations\" />
-        <Folder Include="VueClient2\src\components\" />
         <Folder Include="wwwroot\"/>
     </ItemGroup>
 
