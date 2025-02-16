@@ -1,11 +1,9 @@
 ﻿<template>
-  <v-card>
-    <v-card-title>
-      魚重歷史紀錄
-    </v-card-title>
+  <v-label class="text-h4 ma-4 text-black">
+    魚重歷史紀錄
+  </v-label>
 
-    <FishWeightHistory />
-  </v-card>
+  <FishWeightHistory />
 </template>
 
 <script setup lang="ts">

@@ -1,8 +1,6 @@
 <template>
-  <v-card>
+  <v-card style="height: 800px;">
     <BarChart
-      :width="500"
-      :height="500"
       :data="chartData"
     />
   </v-card>

@@ -20,6 +20,7 @@
     "chart.js": "^4.4.7",
     "core-js": "^3.37.1",
     "dayjs": "^1.11.13",
+    "radash": "^12.1.0",
     "roboto-fontface": "*",
     "v-calendar": "3.0.1",
     "vue": "^3.4.31",
