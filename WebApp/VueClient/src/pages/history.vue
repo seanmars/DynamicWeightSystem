@@ -1,12 +1,10 @@
 ﻿<template>
-  <v-card width="600px">
+  <v-card>
     <v-card-title>
       魚重歷史紀錄
     </v-card-title>
 
-    <v-card-item>
-      <FishWeightHistory />
-    </v-card-item>
+    <FishWeightHistory />
   </v-card>
 </template>
 
