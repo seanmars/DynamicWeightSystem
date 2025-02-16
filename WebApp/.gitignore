@@ -3,3 +3,6 @@
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+
+wwwroot/**/*.*
+!wwwroot/.gitkeep
