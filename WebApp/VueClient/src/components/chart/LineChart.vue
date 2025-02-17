@@ -1,5 +1,6 @@
 ﻿<template>
   <div class="chart-container">
+    <!-- @vue-skip -->
     <Line
       :width="width"
       :height="height"

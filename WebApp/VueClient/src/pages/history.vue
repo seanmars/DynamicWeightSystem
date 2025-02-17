@@ -1,5 +1,5 @@
 ﻿<template>
-  <v-label class="text-h4 ma-4 text-black">
+  <v-label class="text-h4 ma-4">
     魚重歷史紀錄
   </v-label>
 

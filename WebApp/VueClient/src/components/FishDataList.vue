@@ -15,12 +15,9 @@
         <v-icon class="me-2" size="small" color="blue" icon="fa fa-pen-to-square" @click="editItem(item)" />
         <v-icon class="me-2" size="small" color="red" icon="fa fa-trash" @click="deleteItem(item)" />
       </template>
-
-      <template v-slot:bottom>
-      </template>
     </v-data-table>
 
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialogConfirm" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">魚種</span>
@@ -64,7 +61,7 @@
           <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">
             確認
           </v-btn>
-          <v-spacer></v-spacer>
+          <v-spacer />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -96,7 +93,7 @@ const headers = [
 ] as const;
 
 const fishData = ref<FishData[]>([]);
-const dialog = ref(false);
+const dialogConfirm = ref(false);
 const dialogDelete = ref(false);
 const editedItem = ref<FishData>({ id: '', fishCode: '', name: '' });
 const defaultItem = { id: '', fishCode: '', name: '' };
@@ -136,7 +133,7 @@ const createRequest = async () => {
 };
 
 const updateRequest = async () => {
-  const url = `/api/fish-data/${ editedItem.value.id }`;
+  const url = `/api/fish-data/${editedItem.value.id}`;
   const { data, error } = await useFetch(url, {
     method: 'PUT',
     headers: {
@@ -154,7 +151,7 @@ const updateRequest = async () => {
 };
 
 const deleteRequest = async () => {
-  const url = `/api/fish-data/${ editedItem.value.id }`;
+  const url = `/api/fish-data/${editedItem.value.id}`;
   const { error } = await useFetch(url, {
     method: 'DELETE',
   });
@@ -169,13 +166,13 @@ const deleteRequest = async () => {
 
 const createItem = () => {
   editedItem.value = { ...defaultItem };
-  dialog.value = true;
+  dialogConfirm.value = true;
   editState.value = 'create';
 };
 
 const editItem = (item: FishData) => {
   editedItem.value = { ...item };
-  dialog.value = true;
+  dialogConfirm.value = true;
   editState.value = 'edit';
 };
 
@@ -209,7 +206,7 @@ const save = async () => {
 };
 
 const close = () => {
-  dialog.value = false;
+  dialogConfirm.value = false;
   nextTick(() => {
     editedItem.value = Object.assign({}, defaultItem);
   });

@@ -88,6 +88,9 @@ import { ref, onMounted } from 'vue';
 import { useFetch } from '@vueuse/core';
 import dayjs from 'dayjs';
 import { sort as radashSort } from 'radash';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+/* @ts-expect-error */
 import { DatePicker } from 'v-calendar';
 
 import type { FishData, FishWeightHistory } from '@/models';
@@ -257,10 +260,10 @@ const showLineChart = (item: any) => {
       {
         label: getFishName(item.fish),
         data,
-        backgroundColor: ['rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgb(0,33,141)'],
+        backgroundColor: ['rgba(93,171,224,0.2)'],
+        borderColor: ['rgb(65,103,231)'],
         borderWidth: 1,
-        pointBackgroundColor: 'rgb(0,33,141)',
+        pointBackgroundColor: 'rgb(15,50,162)',
         pointStyle: 'circle',
       },
       {
@@ -300,8 +303,8 @@ const showRangeChart = (item: any) => {
       {
         label: getFishName(item.fish),
         data: datasets,
-        backgroundColor: ['rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgb(0,33,141)'],
+        backgroundColor: ['rgba(93,171,224,0.2)'],
+        borderColor: ['rgb(65,103,231)'],
         borderWidth: 1,
       },
     ],
