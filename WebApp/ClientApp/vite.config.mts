@@ -1,15 +1,17 @@
+import {fileURLToPath, URL} from 'node:url';
+
 // Plugins
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import Fonts from 'unplugin-fonts/vite'
-import Layouts from 'vite-plugin-vue-layouts'
-import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'unplugin-vue-router/vite'
-import Vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import Fonts from 'unplugin-fonts/vite';
+import Layouts from 'vite-plugin-vue-layouts';
+import Vue from '@vitejs/plugin-vue';
+import VueRouter from 'unplugin-vue-router/vite';
+import Vuetify, {transformAssetUrls} from 'vite-plugin-vuetify';
 
 // Utilities
-import {defineConfig} from 'vite'
-import {fileURLToPath, URL} from 'node:url'
+import {defineConfig} from 'vite';
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,7 +25,7 @@ export default defineConfig({
         'vue',
         {
           'vue-router/auto': ['useRoute', 'useRouter'],
-        }
+        },
       ],
       dts: 'src/auto-imports.d.ts',
       eslintrc: {
@@ -53,6 +55,9 @@ export default defineConfig({
       },
     }),
   ],
+  // build: {
+  //   outDir: '../wwwroot',
+  // },
   define: {'process.env': {}},
   resolve: {
     alias: {
@@ -83,4 +88,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

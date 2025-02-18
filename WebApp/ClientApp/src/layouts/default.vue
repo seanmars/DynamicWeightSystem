@@ -18,7 +18,7 @@
         <NavigationItems />
       </v-navigation-drawer>
 
-      <v-main class="ma-3">
+      <v-main class="ma-2">
         <router-view />
       </v-main>
 

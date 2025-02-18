@@ -1,4 +1,5 @@
 ﻿<template>
+  <!-- @vue-skip -->
   <div>
     <v-btn color="primary" @click="createItem">
       新增
@@ -6,6 +7,7 @@
     <v-data-table
       :headers="headers"
       :items="fishData"
+      :items-per-page="itemsPerPage"
       item-value="id"
       height="500px"
       fixed-header
@@ -16,7 +18,7 @@
       </template>
     </v-data-table>
 
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialogConfirm" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">魚種</span>
@@ -60,7 +62,7 @@
           <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">
             確認
           </v-btn>
-          <v-spacer></v-spacer>
+          <v-spacer />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -92,11 +94,15 @@ const headers = [
 ] as const;
 
 const fishData = ref<FishData[]>([]);
-const dialog = ref(false);
+const dialogConfirm = ref(false);
 const dialogDelete = ref(false);
 const editedItem = ref<FishData>({ id: '', fishCode: '', name: '' });
 const defaultItem = { id: '', fishCode: '', name: '' };
 const editState = ref<'edit' | 'create'>('create');
+
+const itemsPerPage = computed(() => {
+  return fishData.value.length;
+});
 
 const getFishData = async () => {
   const url = '/api/fish-data';
@@ -161,13 +167,13 @@ const deleteRequest = async () => {
 
 const createItem = () => {
   editedItem.value = { ...defaultItem };
-  dialog.value = true;
+  dialogConfirm.value = true;
   editState.value = 'create';
 };
 
 const editItem = (item: FishData) => {
   editedItem.value = { ...item };
-  dialog.value = true;
+  dialogConfirm.value = true;
   editState.value = 'edit';
 };
 
@@ -201,7 +207,7 @@ const save = async () => {
 };
 
 const close = () => {
-  dialog.value = false;
+  dialogConfirm.value = false;
   nextTick(() => {
     editedItem.value = Object.assign({}, defaultItem);
   });
