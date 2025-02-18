@@ -88,10 +88,9 @@ import { ref, onMounted } from 'vue';
 import { useFetch } from '@vueuse/core';
 import dayjs from 'dayjs';
 import { sort as radashSort } from 'radash';
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
 import { DatePicker } from 'v-calendar';
+import BarChart from '@/components/chart/BarChart.vue';
+import LineChart from '@/components/chart/LineChart.vue';
 
 import type { FishData, FishWeightHistory } from '@/models';
 

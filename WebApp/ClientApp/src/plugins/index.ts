@@ -9,8 +9,6 @@ import vuetify from './vuetify';
 import pinia from '../stores';
 import router from '../router';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
 import { setupCalendar, Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 

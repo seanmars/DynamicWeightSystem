@@ -1,4 +1,5 @@
 ﻿<template>
+  <!-- @vue-skip -->
   <div>
     <v-btn color="primary" @click="createItem">
       新增
