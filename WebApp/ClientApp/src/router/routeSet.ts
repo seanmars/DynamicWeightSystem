@@ -14,6 +14,12 @@ const routeSet: ItemLink[] = [
     component: 'index',
   },
   {
+    icon: 'fa-solid fa-weight-hanging',
+    text: '分規資訊管理',
+    to: '/weight-level',
+    component: 'weightLevel',
+  },
+  {
     icon: 'fas fa-gear',
     text: '魚種編號管理',
     to: '/fish-data',

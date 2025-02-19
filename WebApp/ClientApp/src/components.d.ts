@@ -15,5 +15,6 @@ declare module 'vue' {
     NavigationItems: typeof import('./components/NavigationItems.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    WeightLevelList: typeof import('./components/WeightLevelList.vue')['default']
   }
 }

@@ -19,7 +19,7 @@ public class FakeDataService
                 return date.ToUnixTimeSeconds();
             })
             .RuleFor(x => x.FishCode, f => f.Random.ArrayElement(["FishA", "FishB"]))
-            .RuleFor(x => x.Weight, f => f.Random.Number(1600, 2000));
+            .RuleFor(x => x.Weight, f => f.Random.Number(0, 1400));
 
         for (var i = 0; i < count; i++)
         {

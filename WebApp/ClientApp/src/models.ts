@@ -10,3 +10,11 @@ export interface FishWeightHistory {
   fishCode: string;
   weight: number;
 }
+
+export interface WeightLevel {
+  level: number;
+  lowerBound: number;
+  upperBound: number;
+}
+
+export type WeightLevelList = WeightLevel[];
