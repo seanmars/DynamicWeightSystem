@@ -1,6 +1,5 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Endpoints.FishSamplingEndpoint.Dto;
 
 namespace WebApp.Endpoints.FishSamplingEndpoint;

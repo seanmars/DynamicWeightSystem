@@ -1,7 +1,8 @@
 ﻿<template>
-  <v-label class="text-h4 ma-4">
+  <v-card-title>
     魚重歷史紀錄
-  </v-label>
+  </v-card-title>
+  <v-divider />
 
   <FishWeightHistory />
 </template>

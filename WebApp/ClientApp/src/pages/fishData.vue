@@ -3,6 +3,7 @@
     <v-card-title>
       魚種編號管理
     </v-card-title>
+    <v-divider />
 
     <v-card-item>
       <FishDataList />

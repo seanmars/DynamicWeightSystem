@@ -51,7 +51,7 @@
           {{ getFishName(item.fish) }}({{ item.fish }})
         </template>
         <template v-slot:item.dataset="{ item }">
-          <v-btn variant="elevated" text="區間圖表" @click="showRangeChart(item)" />
+          <v-btn variant="elevated" text="分規圖表" @click="showWeightLevelChart(item)" />
           <span class="ma-1" />
           <v-btn variant="elevated" text="歷史圖表" @click="showLineChart(item)" />
         </template>
@@ -87,12 +87,12 @@
 import { ref, onMounted } from 'vue';
 import { useFetch } from '@vueuse/core';
 import dayjs from 'dayjs';
-import { sort as radashSort } from 'radash';
+import * as _ from 'lodash-es';
 import { DatePicker } from 'v-calendar';
 import BarChart from '@/components/chart/BarChart.vue';
 import LineChart from '@/components/chart/LineChart.vue';
 
-import type { FishData, FishWeightHistory } from '@/models';
+import type { FishData, FishWeightHistory, WeightLevelList } from '@/models';
 
 type ChartType = 'null' | 'bar' | 'line';
 
@@ -110,7 +110,7 @@ const range = ref({
 });
 
 interface chartDataType {
-  labels: string[];
+  labels: string[] | string[][];
   datasets: {
     label: string;
     data: number[];
@@ -119,8 +119,11 @@ interface chartDataType {
     borderWidth: number
     pointBackgroundColor?: string;
     pointStyle?: string | boolean;
+    maxBarThickness?: number;
   }[];
 }
+
+const weightLevels = ref<WeightLevelList>([]);
 
 const chartData = ref<chartDataType | null>(null);
 const fishData = ref<FishData[]>([]);
@@ -152,8 +155,8 @@ const getFishName = (fishCode: string) => {
   return fish ? fish.name : fishCode;
 };
 
-const calculateWeightRange = (item: FishWeightHistory[], range: number = 200): Record<string, {
-  weight: number,
+const calculateWeightRange = (item: FishWeightHistory[], levels: WeightLevelList): Record<string, {
+  level: number,
   data: FishWeightHistory
 }[]> => {
   if (item.length === 0) {
@@ -169,32 +172,31 @@ const calculateWeightRange = (item: FishWeightHistory[], range: number = 200): R
   }, {});
 
   const rangeFish: Record<string, {
-    weight: number,
+    level: number,
     data: FishWeightHistory
   }[]> = {};
+
   for (const fishCode in fishGroup) {
     const fishData = fishGroup[fishCode];
 
-    // group by every range
-    const rangeGroup: Record<string, {
-      weight: number,
-      data: FishWeightHistory
-    }[]> = fishData.reduce((acc: any, data) => {
-      const w = Math.floor(data.weight / range) * range;
-      const key = `${fishCode}-${w} g`;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push({ weight: w, data: data });
-      return acc;
-    }, {});
+    for (const fishDataKey in fishData) {
+      const data = fishData[fishDataKey];
+      const level = levels.find((item) => {
+        return data.weight >= item.lowerBound && data.weight <= item.upperBound;
+      });
 
-    for (const rangeGroupKey in rangeGroup) {
-      if (!rangeFish[rangeGroupKey]) {
-        rangeFish[rangeGroupKey] = [];
+      if (!level) {
+        console.log(`No level found for ${data.weight} g`);
+        continue;
       }
-      rangeFish[rangeGroupKey].push(...rangeGroup[rangeGroupKey]);
+
+      const key = `${fishCode}-${level.level}`;
+      if (!rangeFish[key]) {
+        rangeFish[key] = [];
+      }
+      rangeFish[key].push({ level: level.level, data });
     }
+
   }
 
   return rangeFish;
@@ -278,23 +280,33 @@ const showLineChart = (item: any) => {
   };
 };
 
-const showRangeChart = (item: any) => {
+const showWeightLevelChart = (item: any) => {
   chartType.value = 'bar';
 
-  const rangeFish = calculateWeightRange(item.dataset, 50);
-  const flatRangeFish = radashSort(Object.keys(rangeFish).map((key) => {
+  const rangeFish = calculateWeightRange(item.dataset, weightLevels.value || []);
+  const flatRangeFish = _.sortBy(Object.keys(rangeFish).map((key) => {
     return {
       key,
       data: rangeFish[key],
     };
-  }), s => s.data[0].weight);
+  }), s => s.data[0].level);
 
-  const labels = flatRangeFish.map((item) => {
-    return item.key.split('-')[1];
+  const labels = weightLevels.value.map((item) => {
+    return [`${item.level}`, `${item.lowerBound} ~ ${item.upperBound} g`];
   });
-  const datasets = flatRangeFish.map((item) => {
-    return item.data.length;
-  });
+
+  const datasets: number[] = [];
+  for (const level of weightLevels.value) {
+    const fishData = flatRangeFish.find((item) => {
+      if (item.data[0].level === level.level) {
+        datasets.push(item.data.length);
+        return true;
+      }
+      return false;
+    });
+
+    datasets.push(!!fishData ? fishData?.data.length : 0);
+  }
 
   chartData.value = {
     labels,
@@ -305,12 +317,26 @@ const showRangeChart = (item: any) => {
         backgroundColor: ['rgba(93,171,224,0.2)'],
         borderColor: ['rgb(65,103,231)'],
         borderWidth: 1,
+        maxBarThickness: 100,
       },
     ],
   };
 };
 
+const fetchWeightLevels = async () => {
+  const { isFetching, error, data } = await useFetch<WeightLevelList>('/api/weight-level')
+    .json();
+
+  if (error.value) {
+    console.error(error.value);
+    return;
+  }
+
+  weightLevels.value = data.value || [];
+};
+
 onMounted(async () => {
+  await fetchWeightLevels();
   await getFishData();
   await getFishWeightHistory();
 });
