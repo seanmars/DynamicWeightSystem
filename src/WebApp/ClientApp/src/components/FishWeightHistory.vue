@@ -8,6 +8,7 @@
         本月
       </v-btn>
     </v-card-actions>
+
     <v-card-actions>
       <span>日期範圍</span>
       <DatePicker
@@ -46,6 +47,21 @@
         </template>
       </DatePicker>
     </v-card-actions>
+
+    <v-card-actions>
+      <v-combobox
+        v-model="selectedFish"
+        label="魚種 (若不選則查詢全部)"
+        variant="outlined"
+        :items="fishData"
+        item-title="name"
+        item-value="fishCode"
+        multiple
+        clearable
+      >
+      </v-combobox>
+    </v-card-actions>
+
     <v-card-actions>
       <v-btn variant="outlined" border block color="primary" @click="getFishWeightHistory">
         查詢
@@ -119,6 +135,8 @@ const headers = [
 
 const chartType = ref<ChartType>('null');
 
+const selectedFish = ref<FishData[] | null>(null);
+
 const range = ref({
   start: dayjs().toDate(),
   end: dayjs().toDate(),
@@ -169,6 +187,12 @@ const getFishWeightHistory = async () => {
     const params = new URLSearchParams();
     params.append('start', start.toString());
     params.append('end', end.toString());
+
+    if (!!selectedFish.value) {
+      for (const f of selectedFish.value) {
+        params.append('fish', f.fishCode);
+      }
+    }
 
     url = `${url}?${params.toString()}`;
 

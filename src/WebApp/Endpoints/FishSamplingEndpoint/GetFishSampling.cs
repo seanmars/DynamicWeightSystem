@@ -57,6 +57,11 @@ public class GetFishSampling : Ep
             queryable = queryable.Where(x => x.Timestamp < endTimestamp);
         }
 
+        if (request.FishCodes != null && request.FishCodes.Any())
+        {
+            queryable = queryable.Where(x => request.FishCodes.Contains(x.FishCode));
+        }
+
         // var result = await queryable.ToListAsync(cancellationToken: ct);
         var result = queryable.ToList();
 
