@@ -39,3 +39,7 @@
 
 5. Access the application at `http://localhost:5000` or `https://localhost:5001` or whatever you set up.
 6. You can access the OpenAPI UI at `/scalar/v1`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
