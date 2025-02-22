@@ -73,6 +73,7 @@
 import { ref, onMounted } from 'vue';
 import { useFetch } from '@vueuse/core';
 import type { FishData } from '@/models';
+import { useAppStore } from '@/stores/app';
 
 const headers = [
   {
@@ -92,6 +93,8 @@ const headers = [
     sortable: false,
   },
 ] as const;
+
+const appStore = useAppStore();
 
 const fishData = ref<FishData[]>([]);
 const dialogConfirm = ref(false);
@@ -214,7 +217,12 @@ const close = () => {
 };
 
 onMounted(async () => {
-  await getFishData();
+  appStore.activateOverlay();
+  try {
+    await getFishData();
+  } finally {
+    await appStore.deactivateOverlay();
+  }
 });
 </script>
 

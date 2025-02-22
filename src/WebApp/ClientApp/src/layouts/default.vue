@@ -24,6 +24,17 @@
 
       <AppFooter />
     </v-app>
+
+    <v-overlay
+      :model-value="appStore.getOverlay"
+      class="align-center justify-center"
+    >
+      <v-progress-circular
+        color="primary"
+        size="64"
+        indeterminate
+      />
+    </v-overlay>
   </v-layout>
 </template>
 
@@ -32,11 +43,14 @@ import { useTheme } from 'vuetify';
 import { useStorage } from '@vueuse/core';
 import NavigationItems from '@/components/NavigationItems.vue';
 import AppFooter from '@/components/AppFooter.vue';
+import { useAppStore } from '@/stores/app';
 
 const theme = useTheme();
 
 const drawer = useStorage('drawer', true);
 const curTheme = useStorage('theme', 'dark');
+
+const appStore = useAppStore();
 
 const toggleDrawer = () => {
   drawer.value = !drawer.value;

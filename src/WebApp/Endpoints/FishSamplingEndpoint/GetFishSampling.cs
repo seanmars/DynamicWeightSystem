@@ -1,11 +1,12 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Endpoints.FishSamplingEndpoint.Dto;
 
 namespace WebApp.Endpoints.FishSamplingEndpoint;
 
 public class GetFishSampling : Ep
-    .NoReq
+    .Req<FishSamplingRequest>
     .Res<Results<
         Ok<List<FishSamplingDto>>,
         BadRequest<string>
@@ -28,18 +29,36 @@ public class GetFishSampling : Ep
     }
 
     public override async Task<Results<Ok<List<FishSamplingDto>>, BadRequest<string>>> ExecuteAsync(
+        FishSamplingRequest request,
         CancellationToken ct)
     {
-        // var result = await _db.FishSamplings
+        var startTimestamp = request.Start;
+        var endTimestamp = request.End;
+
+        // var queryable = _db.FishSamplings
         //     .Select(x => new FishSamplingDto
         //     {
         //         Timestamp = x.Timestamp,
         //         FishCode = x.FishCode,
         //         Weight = x.Weight
-        //     })
-        //     .ToListAsync(cancellationToken: ct);
+        //     });
+        //
 
-        var result = _fakeDataService.GetFishSamplings();
+        var rawData = new EnumerableQuery<FishSamplingDto>(_fakeDataService.GetFishSamplings());
+        var queryable = rawData.AsQueryable();
+
+        if (startTimestamp.HasValue)
+        {
+            queryable = queryable.Where(x => x.Timestamp >= startTimestamp);
+        }
+
+        if (endTimestamp.HasValue)
+        {
+            queryable = queryable.Where(x => x.Timestamp < endTimestamp);
+        }
+
+        // var result = await queryable.ToListAsync(cancellationToken: ct);
+        var result = queryable.ToList();
 
         return TypedResults.Ok(result);
     }

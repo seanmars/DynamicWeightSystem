@@ -1,6 +1,14 @@
 ﻿<template>
   <v-card class="top-container">
     <v-card-actions>
+      <v-btn variant="outlined" border color="blue" @click="setDateRangeToToday">
+        當日
+      </v-btn>
+      <v-btn variant="outlined" border color="orange" @click="setDateRangeToThisMonth">
+        本月
+      </v-btn>
+    </v-card-actions>
+    <v-card-actions>
       <span>日期範圍</span>
       <DatePicker
         v-model.range="range"
@@ -38,6 +46,11 @@
         </template>
       </DatePicker>
     </v-card-actions>
+    <v-card-actions>
+      <v-btn variant="outlined" border block color="primary" @click="getFishWeightHistory">
+        查詢
+      </v-btn>
+    </v-card-actions>
 
     <v-card-item>
       <v-data-table-virtual
@@ -51,9 +64,9 @@
           {{ getFishName(item.fish) }}({{ item.fish }})
         </template>
         <template v-slot:item.dataset="{ item }">
-          <v-btn variant="elevated" text="分規圖表" @click="showWeightLevelChart(item)" />
+          <v-btn variant="outlined" border text="分規圖表" @click="showWeightLevelChart(item)" />
           <span class="ma-1" />
-          <v-btn variant="elevated" text="歷史圖表" @click="showLineChart(item)" />
+          <v-btn variant="outlined" border text="歷史圖表" @click="showLineChart(item)" />
         </template>
       </v-data-table-virtual>
     </v-card-item>
@@ -91,15 +104,17 @@ import * as _ from 'lodash-es';
 import { DatePicker } from 'v-calendar';
 import BarChart from '@/components/chart/BarChart.vue';
 import LineChart from '@/components/chart/LineChart.vue';
-
 import type { FishData, FishWeightHistory, WeightLevelList } from '@/models';
+import { useAppStore } from '@/stores/app';
 
 type ChartType = 'null' | 'bar' | 'line';
 
+const appStore = useAppStore();
+
 const headers = [
-  { title: '魚種', key: 'fish' },
-  { title: '重量(平均)', key: 'weight' },
-  { title: '圖表', key: 'dataset' },
+  { title: '魚種', key: 'fish', sortable: false },
+  { title: '重量(平均)', key: 'weight', sortable: false },
+  { title: '圖表', key: 'dataset', sortable: false },
 ];
 
 const chartType = ref<ChartType>('null');
@@ -141,14 +156,34 @@ const getFishData = async () => {
 };
 
 const getFishWeightHistory = async () => {
-  const url = '/api/fish-sampling';
-  const { data, error } = await useFetch(url).json<FishWeightHistory[]>();
-  if (error.value) {
-    console.error(error.value);
-    return;
+    let url = '/api/fish-sampling';
+
+    const start = dayjs(range.value.start)
+      .startOf('day')
+      .unix();
+    const end = dayjs(range.value.end)
+      .add(1, 'day')
+      .startOf('day')
+      .unix();
+
+    const params = new URLSearchParams();
+    params.append('start', start.toString());
+    params.append('end', end.toString());
+
+    url = `${url}?${params.toString()}`;
+
+    const { data, error } = await useFetch(url)
+      .get()
+      .json<FishWeightHistory[]>();
+    if (error.value) {
+      console.error(error.value);
+      return;
+    }
+    fishWeightHistory.value = data.value || [];
+
+    console.log(fishWeightHistory.value.length);
   }
-  fishWeightHistory.value = data.value || [];
-};
+;
 
 const getFishName = (fishCode: string) => {
   const fish = fishData.value.find((item) => item.fishCode === fishCode);
@@ -335,11 +370,31 @@ const fetchWeightLevels = async () => {
   weightLevels.value = data.value || [];
 };
 
+const setDateRangeToToday = () => {
+  range.value = {
+    start: dayjs().toDate(),
+    end: dayjs().toDate(),
+  };
+};
+
+const setDateRangeToThisMonth = () => {
+  range.value = {
+    start: dayjs().startOf('month').toDate(),
+    end: dayjs().endOf('month').toDate(),
+  };
+};
+
 onMounted(async () => {
-  await fetchWeightLevels();
-  await getFishData();
-  await getFishWeightHistory();
+  appStore.activateOverlay();
+
+  try {
+    await fetchWeightLevels();
+    await getFishData();
+  } finally {
+    await appStore.deactivateOverlay();
+  }
 });
+;
 </script>
 
 <style scoped>

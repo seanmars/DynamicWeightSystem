@@ -11,11 +11,11 @@
 
     <v-card-actions class="d-flex justify-center">
       <v-spacer />
-      <v-btn color="error" border @click="cancel">
+      <v-btn variant="outlined" color="error" border @click="cancel">
         回復
       </v-btn>
       <v-spacer />
-      <v-btn color="primary" border @click="save">
+      <v-btn variant="outlined" color="primary" border @click="save">
         儲存
       </v-btn>
       <v-spacer />
@@ -31,6 +31,9 @@
 import * as _ from 'lodash-es';
 import { useFetch } from '@vueuse/core';
 import type { WeightLevelList } from '@/models';
+import { useAppStore } from '@/stores/app';
+
+const appStore = useAppStore();
 
 const snackbar = ref<boolean>(false);
 const message = ref<string>('');
@@ -68,27 +71,41 @@ const cancel = () => {
 };
 
 const save = async () => {
-  const url = '/api/weight-level';
-  const { isFetching, error, response } = await useFetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(weightLevels.value),
-  }).json();
+  appStore.activateOverlay();
+  try {
+    const url = '/api/weight-level';
+    const { isFetching, error, response } = await useFetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(weightLevels.value),
+    }).json();
 
-  if (error.value) {
-    console.error(error.value);
-    showMessage('儲存失敗');
-    return;
+    if (error.value) {
+      console.error(error.value);
+      showMessage('儲存失敗');
+      return;
+    }
+
+    originValues.value = _.cloneDeep(weightLevels.value);
+    showMessage('儲存成功');
+  } finally {
+    await appStore.deactivateOverlay();
   }
-
-  originValues.value = _.cloneDeep(weightLevels.value);
-  showMessage('儲存成功');
 };
 
 onMounted(async () => {
-  await fetchWeightLevels();
+  appStore.activateOverlay();
+  console.log('onMounted');
+  try {
+    await fetchWeightLevels();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    console.log('finally');
+    await appStore.deactivateOverlay();
+  }
 });
 </script>
 
