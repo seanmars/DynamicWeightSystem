@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using WebApp;
+using WebApp.Service;
 
 Log.Logger = new LoggerConfiguration()
     .Destructure.ToMaximumDepth(3)
@@ -25,6 +26,7 @@ try
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
+    builder.Services.AddSingleton<DeviceService>();
     builder.Services.AddSingleton<FakeDataService>();
 
     var app = builder.Build();

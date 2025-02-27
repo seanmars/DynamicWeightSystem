@@ -35,17 +35,16 @@ public class GetFishSampling : Ep
         var startTimestamp = request.Start;
         var endTimestamp = request.End;
 
-        // var queryable = _db.FishSamplings
-        //     .Select(x => new FishSamplingDto
-        //     {
-        //         Timestamp = x.Timestamp,
-        //         FishCode = x.FishCode,
-        //         Weight = x.Weight
-        //     });
-        //
+        var queryable = _db.FishSamplings
+            .Select(x => new FishSamplingDto
+            {
+                Timestamp = x.Timestamp,
+                FishCode = x.FishCode,
+                Weight = x.Weight
+            });
 
-        var rawData = new EnumerableQuery<FishSamplingDto>(_fakeDataService.GetFishSamplings());
-        var queryable = rawData.AsQueryable();
+        // var rawData = new EnumerableQuery<FishSamplingDto>(_fakeDataService.GetFishSamplings());
+        // var queryable = rawData.AsQueryable();
 
         if (startTimestamp.HasValue)
         {
@@ -62,8 +61,8 @@ public class GetFishSampling : Ep
             queryable = queryable.Where(x => request.FishCodes.Contains(x.FishCode));
         }
 
-        // var result = await queryable.ToListAsync(cancellationToken: ct);
-        var result = queryable.ToList();
+        var result = await queryable.ToListAsync(cancellationToken: ct);
+        // var result = queryable.ToList();
 
         return TypedResults.Ok(result);
     }
