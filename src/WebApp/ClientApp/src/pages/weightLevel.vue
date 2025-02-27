@@ -3,17 +3,26 @@
     <v-card-title>
       分規資訊管理
     </v-card-title>
+
+    <v-card-actions class="justify-end">
+      <v-btn variant="outlined" color="purple" border @click="syncDataFormDevice">
+        載入設備分規資訊
+      </v-btn>
+
+      <v-btn variant="outlined" color="blue" border @click="syncDataFormServer">
+        載入伺服器資訊
+      </v-btn>
+    </v-card-actions>
+
     <v-divider />
 
     <div class="mt-3 ml-3">
       <WeightLevelList v-model="weightLevels" />
     </div>
 
-    <v-card-actions class="d-flex justify-center">
+    <v-card-actions class="d-flex justify-center mb-6">
       <v-spacer />
-      <v-btn variant="outlined" color="error" border @click="cancel">
-        回復
-      </v-btn>
+      <v-spacer />
       <v-spacer />
       <v-btn variant="outlined" color="primary" border @click="save">
         儲存
@@ -54,20 +63,27 @@ const showMessage = (msg: string, error = false) => {
 };
 
 const fetchWeightLevels = async () => {
-  const { isFetching, error, data } = await useFetch<WeightLevelList>('/api/weight-level')
-    .json();
+  appStore.activateOverlay();
+  try {
+    const { isFetching, error, data } = await useFetch<WeightLevelList>('/api/weight-level')
+      .json();
 
-  if (error.value) {
-    console.error(error.value);
-    return;
+    if (error.value) {
+      console.error(error.value);
+      return;
+    }
+
+    weightLevels.value = data.value || [];
+    originValues.value = _.cloneDeep(data.value);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await appStore.deactivateOverlay();
   }
-
-  weightLevels.value = data.value || [];
-  originValues.value = _.cloneDeep(data.value);
 };
 
-const cancel = () => {
-  weightLevels.value = _.cloneDeep(originValues.value);
+const syncDataFormServer = async () => {
+  await fetchWeightLevels();
 };
 
 const save = async () => {
@@ -95,17 +111,22 @@ const save = async () => {
   }
 };
 
-onMounted(async () => {
+const syncDataFormDevice = async () => {
   appStore.activateOverlay();
-  console.log('onMounted');
   try {
-    await fetchWeightLevels();
-  } catch (error) {
-    console.error(error);
+    const url = '/api/weight-level-from-device';
+    const { isFetching, error, data } = await useFetch<WeightLevelList>(url)
+      .json();
+
+    weightLevels.value = data.value || [];
+    originValues.value = _.cloneDeep(data.value);
   } finally {
-    console.log('finally');
     await appStore.deactivateOverlay();
   }
+};
+
+onMounted(async () => {
+  await fetchWeightLevels();
 });
 </script>
 

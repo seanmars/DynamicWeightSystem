@@ -16,5 +16,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     WeightLevelList: typeof import('./components/WeightLevelList.vue')['default']
+    WeightLevelListPlus: typeof import('./components/WeightLevelListPlus.vue')['default']
   }
 }
