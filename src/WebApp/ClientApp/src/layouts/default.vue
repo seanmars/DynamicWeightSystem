@@ -3,7 +3,7 @@
     <v-app id="main-app">
       <v-app-bar>
         <v-app-bar-nav-icon @click="toggleDrawer" />
-        <v-app-bar-title>Application</v-app-bar-title>
+        <v-app-bar-title>動態秤重系統</v-app-bar-title>
         <v-spacer />
 
         <!-- switch theme mode-->

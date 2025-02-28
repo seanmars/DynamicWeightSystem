@@ -1,7 +1,7 @@
 ﻿<template>
   <!-- @vue-skip -->
   <div>
-    <v-btn color="primary" @click="createItem">
+    <v-btn border variant="outlined" color="primary" @click="createItem">
       新增
     </v-btn>
     <v-data-table
@@ -18,30 +18,40 @@
       </template>
     </v-data-table>
 
-    <v-dialog v-model="dialogConfirm" max-width="500px">
+    <v-dialog v-model="dialogUpsertConfirm" max-width="500px" persistent>
       <v-card>
         <v-card-title>
           <span class="headline">魚種</span>
         </v-card-title>
 
         <v-card-text>
-          <v-form ref="form">
-            <v-text-field v-model="editedItem.fishCode" label="編號" />
-            <v-text-field v-model="editedItem.name" label="魚種" />
+          <v-form ref="form-new">
+            <v-text-field
+              v-model="editedItem.fishCode"
+              label="編號"
+              :rules="[rules.required]"
+            />
+            <v-text-field
+              v-model="editedItem.name"
+              label="魚種"
+              :rules="[rules.required]"
+            />
           </v-form>
         </v-card-text>
 
-        <v-card-actions>
-          <v-spacer />
+        <v-card-actions class="mb-4 d-flex justify-end mr-4">
           <v-btn
-            color="blue darken-1"
-            @click="close"
+            variant="outlined"
+            color="red"
+            @click="closeUpsertDialog"
           >
             取消
           </v-btn>
+          <div class="mx-2" />
           <v-btn
-            color="blue darken-1"
-            @click="save"
+            variant="outlined"
+            color="blue"
+            @click="upsertItemConfirmed"
           >
             確認
           </v-btn>
@@ -49,17 +59,25 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogDelete" max-width="500px">
+    <v-dialog v-model="dialogDeleteConfirm" max-width="500px">
       <v-card>
         <v-card-title class="text-h5">
           確定要刪除資料嗎?
         </v-card-title>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="closeDelete">
+          <v-spacer />
+          <v-btn
+            color="red"
+            variant="outlined"
+            @click="closeDeleteDialog"
+          >
             取消
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">
+          <v-btn
+            color="blue"
+            variant="outlined"
+            @click="deleteItemConfirmed"
+          >
             確認
           </v-btn>
           <v-spacer />
@@ -74,6 +92,7 @@ import { ref, onMounted } from 'vue';
 import { useFetch } from '@vueuse/core';
 import type { FishData } from '@/models';
 import { useAppStore } from '@/stores/app';
+import type { VForm } from 'vuetify/components';
 
 const headers = [
   {
@@ -97,15 +116,21 @@ const headers = [
 const appStore = useAppStore();
 
 const fishData = ref<FishData[]>([]);
-const dialogConfirm = ref(false);
-const dialogDelete = ref(false);
+const dialogUpsertConfirm = ref(false);
+const dialogDeleteConfirm = ref(false);
 const editedItem = ref<FishData>({ id: '', fishCode: '', name: '' });
 const defaultItem = { id: '', fishCode: '', name: '' };
 const editState = ref<'edit' | 'create'>('create');
 
+const formNew = useTemplateRef<VForm>('form-new');
+
 const itemsPerPage = computed(() => {
   return fishData.value.length;
 });
+
+const rules = {
+  required: (value: string) => !!value || '必填欄位',
+};
 
 const getFishData = async () => {
   const url = '/api/fish-data';
@@ -170,35 +195,39 @@ const deleteRequest = async () => {
 
 const createItem = () => {
   editedItem.value = { ...defaultItem };
-  dialogConfirm.value = true;
+  dialogUpsertConfirm.value = true;
   editState.value = 'create';
 };
 
 const editItem = (item: FishData) => {
   editedItem.value = { ...item };
-  dialogConfirm.value = true;
+  dialogUpsertConfirm.value = true;
   editState.value = 'edit';
 };
 
 const deleteItem = (item: FishData) => {
   editedItem.value = Object.assign({}, item);
-  dialogDelete.value = true;
+  dialogDeleteConfirm.value = true;
 };
 
-const deleteItemConfirm = async () => {
+const deleteItemConfirmed = async () => {
   await deleteRequest();
   await getFishData();
 
-  dialogDelete.value = false;
-  closeDelete();
+  closeDeleteDialog();
 };
 
-const closeDelete = () => {
-  close();
+const closeDeleteDialog = () => {
+  dialogDeleteConfirm.value = false;
 };
 
-const save = async () => {
+const upsertItemConfirmed = async () => {
   if (editState.value === 'create') {
+    const { valid } = await formNew.value!.validate();
+    if (!valid) {
+      return false;
+    }
+
     await createRequest();
   } else {
     await updateRequest();
@@ -206,11 +235,11 @@ const save = async () => {
 
   await getFishData();
 
-  close();
+  closeUpsertDialog();
 };
 
-const close = () => {
-  dialogConfirm.value = false;
+const closeUpsertDialog = () => {
+  dialogUpsertConfirm.value = false;
   nextTick(() => {
     editedItem.value = Object.assign({}, defaultItem);
   });
