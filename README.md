@@ -30,15 +30,17 @@
     dotnet ef database update
     ```
 
-4. Running the application:
+4. Running the web application, cd to the WebApp folder and run the following command:
 
     ```shell
-    # cd to the WebApp folder
-    dotnet run
+    # run the backend and frontend
+    dotnet run --launch-profile http
+    # run the backend only
+    dotnet run --launch-profile http-standalone
     ```
 
-5. Access the application at `http://localhost:5000` or `https://localhost:5001` or whatever you set up.
-6. You can access the OpenAPI UI at `/scalar/v1`
+5. Access the application at `http://localhost:5231 (backend)`, `http://localhost:9284 (frontend)` or whatever you set up.
+6. You can access the OpenAPI UI at `http://localhost:5231/scalar/v1`
 
 ## License
 
