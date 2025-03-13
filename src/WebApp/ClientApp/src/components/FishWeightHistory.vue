@@ -83,6 +83,8 @@
           <v-btn variant="outlined" border text="分規圖表" @click="showWeightLevelChart(item)" />
           <span class="ma-1" />
           <v-btn variant="outlined" border text="歷史圖表" @click="showLineChart(item)" />
+          <span class="ma-1" />
+          <v-btn variant="outlined" border text="匯出" @click="downloadCsvData(item)" />
         </template>
       </v-data-table-virtual>
     </v-card-item>
@@ -90,14 +92,12 @@
 
   <div class="mt-5">
     <v-card>
-      <v-card-title>
-        圖表
-      </v-card-title>
       <v-card-item>
         <div v-if="chartType == 'bar'">
           <BarChart
             v-if="!!chartData"
             :data="chartData"
+            :total="dataCount"
           />
         </div>
         <div v-else-if="chartType == 'line'">
@@ -159,6 +159,7 @@ interface chartDataType {
 const weightLevels = ref<WeightLevelList>([]);
 
 const chartData = ref<chartDataType | null>(null);
+const dataCount = ref<number>(0);
 const fishData = ref<FishData[]>([]);
 const fishWeightHistory = ref<FishWeightHistory[]>([]);
 
@@ -205,7 +206,7 @@ const getFishWeightHistory = async () => {
     }
     fishWeightHistory.value = data.value || [];
 
-    console.log(fishWeightHistory.value.length);
+    // console.log(fishWeightHistory.value.length);
   }
 ;
 
@@ -298,6 +299,32 @@ const datasetByFish = computed(() => {
   });
 });
 
+const downloadCsvData = (item: any) => {
+  const fishName = getFishName(item.fish);
+
+  const csvData = item.dataset.map((data: FishWeightHistory, idx: number) => {
+    return `${idx + 1},${fishName},${dayjs.unix(data.timestamp).format('YYYY-MM-DD HH:mm:ss')},${data.weight}`;
+  });
+
+  // add title
+  csvData.unshift('編號,魚種,時間,重量(g)');
+
+  // use utf-8 with BOM to encode CSV file
+  const blob = new Blob(['\ufeff', csvData.join('\n')], { type: 'text/csv;charset=utf-8' });
+
+  // Create a link and click it to download the file
+  const encodedUri = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  const today = dayjs().format('YYYYMMDD_HH_mm_ss');
+  link.setAttribute('download', `${today}_${fishName}.csv`);
+  document.body.appendChild(link);
+  link.click();
+
+  // Remove the link
+  document.body.removeChild(link);
+};
+
 const showLineChart = (item: any) => {
   chartType.value = 'line';
 
@@ -355,17 +382,11 @@ const showWeightLevelChart = (item: any) => {
   });
 
   const datasets: number[] = [];
-  for (const level of weightLevels.value) {
-    const fishData = flatRangeFish.find((item) => {
-      if (item.data[0].level === level.level) {
-        datasets.push(item.data.length);
-        return true;
-      }
-      return false;
-    });
-
-    datasets.push(!!fishData ? fishData?.data.length : 0);
+  for (const fish of flatRangeFish) {
+    datasets.push(fish.data.length);
   }
+
+  dataCount.value = datasets.reduce((acc, item) => acc + item, 0);
 
   chartData.value = {
     labels,
