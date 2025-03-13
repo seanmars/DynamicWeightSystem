@@ -92,14 +92,12 @@
 
   <div class="mt-5">
     <v-card>
-      <v-card-title>
-        圖表
-      </v-card-title>
       <v-card-item>
         <div v-if="chartType == 'bar'">
           <BarChart
             v-if="!!chartData"
             :data="chartData"
+            :total="dataCount"
           />
         </div>
         <div v-else-if="chartType == 'line'">
@@ -161,6 +159,7 @@ interface chartDataType {
 const weightLevels = ref<WeightLevelList>([]);
 
 const chartData = ref<chartDataType | null>(null);
+const dataCount = ref<number>(0);
 const fishData = ref<FishData[]>([]);
 const fishWeightHistory = ref<FishWeightHistory[]>([]);
 
@@ -383,17 +382,11 @@ const showWeightLevelChart = (item: any) => {
   });
 
   const datasets: number[] = [];
-  for (const level of weightLevels.value) {
-    const fishData = flatRangeFish.find((item) => {
-      if (item.data[0].level === level.level) {
-        datasets.push(item.data.length);
-        return true;
-      }
-      return false;
-    });
-
-    datasets.push(!!fishData ? fishData?.data.length : 0);
+  for (const fish of flatRangeFish) {
+    datasets.push(fish.data.length);
   }
+
+  dataCount.value = datasets.reduce((acc, item) => acc + item, 0);
 
   chartData.value = {
     labels,
