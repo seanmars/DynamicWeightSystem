@@ -83,6 +83,8 @@
           <v-btn variant="outlined" border text="分規圖表" @click="showWeightLevelChart(item)" />
           <span class="ma-1" />
           <v-btn variant="outlined" border text="歷史圖表" @click="showLineChart(item)" />
+          <span class="ma-1" />
+          <v-btn variant="outlined" border text="匯出" @click="downloadCsvData(item)" />
         </template>
       </v-data-table-virtual>
     </v-card-item>
@@ -205,7 +207,7 @@ const getFishWeightHistory = async () => {
     }
     fishWeightHistory.value = data.value || [];
 
-    console.log(fishWeightHistory.value.length);
+    // console.log(fishWeightHistory.value.length);
   }
 ;
 
@@ -297,6 +299,32 @@ const datasetByFish = computed(() => {
     };
   });
 });
+
+const downloadCsvData = (item: any) => {
+  const fishName = getFishName(item.fish);
+
+  const csvData = item.dataset.map((data: FishWeightHistory, idx: number) => {
+    return `${idx + 1},${fishName},${dayjs.unix(data.timestamp).format('YYYY-MM-DD HH:mm:ss')},${data.weight}`;
+  });
+
+  // add title
+  csvData.unshift('編號,魚種,時間,重量(g)');
+
+  // use utf-8 with BOM to encode CSV file
+  const blob = new Blob(['\ufeff', csvData.join('\n')], { type: 'text/csv;charset=utf-8' });
+
+  // Create a link and click it to download the file
+  const encodedUri = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  const today = dayjs().format('YYYYMMDD_HH_mm_ss');
+  link.setAttribute('download', `${today}_${fishName}.csv`);
+  document.body.appendChild(link);
+  link.click();
+
+  // Remove the link
+  document.body.removeChild(link);
+};
 
 const showLineChart = (item: any) => {
   chartType.value = 'line';
